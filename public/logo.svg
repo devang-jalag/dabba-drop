@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Dabba Drop Emblem">
+  <defs>
+    <linearGradient id="ddBrass" x1="10" y1="6" x2="54" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F2D29B" />
+      <stop offset="52%" stop-color="#D4A359" />
+      <stop offset="100%" stop-color="#9E3B24" />
+    </linearGradient>
+    <linearGradient id="ddVessel" x1="18" y1="20" x2="46" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2D251E" />
+      <stop offset="100%" stop-color="#17120E" />
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="58" height="58" rx="16" fill="url(#ddVessel)" stroke="url(#ddBrass)" stroke-width="1.6" />
+  <!-- Top Drop & Carrier Handle Arch -->
+  <path d="M32 10C32 10 27.5 15.2 27.5 18.2C27.5 20.68 29.51 22.7 32 22.7C34.49 22.7 36.5 20.68 36.5 18.2C36.5 15.2 32 10 32 10Z" fill="url(#ddBrass)" />
+  <path d="M21 27V24.5C21 20.9 25.9 18 32 18C38.1 18 43 20.9 43 24.5V27" stroke="url(#ddBrass)" stroke-width="1.8" stroke-linecap="round" />
+  <!-- Stacked Precision Dabba Tiers -->
+  <path d="M19 27H45C46.1 27 47 27.9 47 29V36C47 37.1 46.1 38 45 38H19C17.9 38 17 37.1 17 36V29C17 27.9 17.9 27 19 27Z" stroke="url(#ddBrass)" stroke-width="1.65" />
+  <path d="M19 38H45C46.1 38 47 38.9 47 40V47.5C47 50.2 44.8 52.4 42.1 52.4H21.9C19.2 52.4 17 50.2 17 47.5V40C17 38.9 17.9 38 19 38Z" stroke="url(#ddBrass)" stroke-width="1.65" />
+  <!-- Side Clasp Straps -->
+  <line x1="15" y1="27" x2="15" y2="48" stroke="url(#ddBrass)" stroke-width="1.5" stroke-linecap="round" />
+  <line x1="49" y1="27" x2="49" y2="48" stroke="url(#ddBrass)" stroke-width="1.5" stroke-linecap="round" />
+  <!-- Stylized Interlocking Geometric D + D Mark -->
+  <path d="M24.5 31.2H28.8C31.2 31.2 32.8 32.7 32.8 34.9C32.8 37.1 31.2 38.6 28.8 38.6H24.5V31.2Z" stroke="#FAF6EE" stroke-width="1.45" />
+  <path d="M31.4 41.2H35.8C38.2 41.2 39.8 42.7 39.8 44.9C39.8 47.1 38.2 48.6 35.8 48.6H31.4V41.2Z" stroke="#E7C284" stroke-width="1.45" />
+</svg>

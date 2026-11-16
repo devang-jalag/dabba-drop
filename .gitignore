@@ -1,0 +1,9 @@
+node_modules/
+mobile-app/node_modules/
+.expo/
+mobile-app/.expo/
+.env
+data/
+uploads/*
+!uploads/.gitkeep
+*.zip

@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Dabba Drop",
+    "slug": "dabba-drop",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dabbadrop.delivery",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Dabba Drop tracks delivery distance to notify guests automatically within 100 meters.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Dabba Drop uses background location so 100-meter arrival alerts fire even when your screen is locked.",
+        "NSCameraUsageDescription": "Dabba Drop captures doorstep proof-of-delivery photos linked to each dabba parcel."
+      }
+    },
+    "android": {
+      "package": "com.dabbadrop.delivery",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "CAMERA"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Dabba Drop to track delivery proximity so guests are notified automatically within 100m."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Dabba Drop to capture doorstep dabba delivery proof photos."
+        }
+      ]
+    ]
+  }
+}
