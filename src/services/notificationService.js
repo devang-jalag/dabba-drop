@@ -22,10 +22,11 @@ function createNotificationService() {
   async function dispatchCustomerNotification(db, delivery, distanceMeters, type = 'PROXIMITY_100M') {
     const isDelivered = type === 'DELIVERED';
     const roundedDistance = Math.round(distanceMeters ?? 0);
-    const title = isDelivered ? 'Tiffin Delivered' : 'Driver Approaching';
+    const title = isDelivered ? 'Dabba Delivered' : 'Rider Approaching';
+    const kitchenLabel = delivery.kitchenName ? `${delivery.kitchenName} ` : '';
     const message = isDelivered
-      ? `${delivery.customerName}, your ${delivery.mealPlan} (${delivery.id}) has been left at your door. Delivery photo kept for 7 days.`
-      : `${delivery.customerName}, your tiffin (${delivery.id}) is ${roundedDistance}m away and arriving shortly.`;
+      ? `${delivery.customerName}, your ${kitchenLabel}dabba (${delivery.id}) has been left at your door. Delivery photo kept for 7 days.`
+      : `${delivery.customerName}, your ${kitchenLabel}dabba (${delivery.id}) is ${roundedDistance}m away and arriving shortly.`;
 
     const entry = {
       id: `NOTIF-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,

@@ -78,6 +78,7 @@ function createApp(options = {}) {
 
   function buildDashboardSnapshot() {
     return {
+      kitchens: db.getAllKitchens(),
       deliveries: db.getAllDeliveries(),
       notifications: db.getNotifications(50),
       auditLogs: db.getAuditLogs(40),
@@ -187,6 +188,49 @@ function createApp(options = {}) {
     });
   });
 
+  // Get partner restaurants / kitchens
+  app.get('/api/kitchens', (req, res) => {
+    const kitchens = db.getAllKitchens();
+    const deliveries = db.getAllDeliveries();
+    const enriched = kitchens.map((k) => ({
+      ...k,
+      activeOrders: deliveries.filter((d) => d.kitchenId === k.id).length
+    }));
+    res.json({ kitchens: enriched });
+  });
+
+  // Register a new partner restaurant / kitchen on Dabba Drop
+  app.post('/api/kitchens', (req, res) => {
+    const { name, cuisine, neighborhood, pricePerMonth } = req.body || {};
+    if (!name || !cuisine || !neighborhood) {
+      return res.status(400).json({ error: 'name, cuisine, and neighborhood are required' });
+    }
+
+    const existing = db.getAllKitchens();
+    const nextNum = String(existing.length + 1).padStart(2, '0');
+    const id = `KITCHEN-${nextNum}`;
+    const price = Number(pricePerMonth) > 0 ? Math.round(Number(pricePerMonth)) : 185;
+
+    const kitchen = db.createKitchen({
+      id,
+      name: String(name).trim(),
+      cuisine: String(cuisine).trim(),
+      neighborhood: String(neighborhood).trim(),
+      pricePerMonth: price,
+      rating: 4.9
+    });
+
+    db.addAuditLog(
+      'KITCHEN_REGISTERED',
+      kitchen.id,
+      `Partner restaurant ${kitchen.name} (${kitchen.cuisine}) joined Dabba Drop`
+    );
+
+    const snapshot = buildDashboardSnapshot();
+    notificationService.broadcastEvent('state_update', snapshot);
+    res.status(201).json({ kitchen, ...snapshot });
+  });
+
   // Get full operational dashboard snapshot
   app.get('/api/deliveries', (req, res) => {
     res.json(buildDashboardSnapshot());
@@ -205,10 +249,12 @@ function createApp(options = {}) {
     });
   });
 
-  // Create new tiffin delivery order
+  // Create new dabba delivery order (added by partner kitchen or subscribed by user)
   app.post('/api/deliveries', (req, res) => {
     const {
       id,
+      kitchenId,
+      kitchenName,
       customerName,
       customerPhone,
       address,
@@ -239,12 +285,20 @@ function createApp(options = {}) {
       return res.status(409).json({ error: `Order ${orderId} already exists` });
     }
 
+    const resolvedKitchen = kitchenId ? db.getKitchenById(String(kitchenId).trim()) : null;
+    const finalKitchenId = resolvedKitchen ? resolvedKitchen.id : (kitchenId || 'KITCHEN-01');
+    const finalKitchenName = resolvedKitchen
+      ? resolvedKitchen.name
+      : (kitchenName ? String(kitchenName).trim() : 'Annapurna Home Kitchen');
+
     const created = db.createDelivery({
       id: orderId,
+      kitchenId: finalKitchenId,
+      kitchenName: finalKitchenName,
       customerName: String(customerName).trim(),
       customerPhone: String(customerPhone).trim(),
       address: String(address).trim(),
-      mealPlan: mealPlan ? String(mealPlan).trim() : 'Standard Home Tiffin',
+      mealPlan: mealPlan ? String(mealPlan).trim() : (resolvedKitchen ? resolvedKitchen.cuisine : 'Standard Daily Dabba'),
       notes: notes ? String(notes).trim() : '',
       lat: numericLat,
       lng: numericLng
@@ -253,7 +307,7 @@ function createApp(options = {}) {
     db.addAuditLog(
       'ORDER_CREATED',
       created.id,
-      `Created order ${created.id} for ${created.customerName} (${created.mealPlan})`
+      `Enrolled ${created.customerName} (${created.id}) under ${created.kitchenName}`
     );
 
     const snapshot = buildDashboardSnapshot();

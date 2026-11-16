@@ -108,7 +108,9 @@ dabba-drop/
 | :--- | :--- |
 | `GET /api/health` | Service health, geofence radius (`100m`), retention policy (`7` days) & live stats |
 | `GET /api/events` | Server-Sent Events stream (`connected`, `state_update`, `notification`, `retention_purged`) |
-| `GET /api/deliveries` | Full operational snapshot (`deliveries`, `notifications`, `auditLogs`, `driver`, `stats`) |
+| `GET /api/kitchens` | List partner restaurants and active subscriber dabba counts |
+| `POST /api/kitchens` | Register a new partner restaurant / tiffin kitchen |
+| `GET /api/deliveries` | Full operational snapshot (`kitchens`, `deliveries`, `notifications`, `auditLogs`, `driver`, `stats`) |
 | `GET /api/deliveries/:id` | Single dabba order details & notification history |
 | `POST /api/deliveries` | Create a new dabba delivery order |
 | `POST /api/driver/location` | Update rider GPS `{ lat, lng }`, calculate ETAs & fire idempotent 100m alerts |

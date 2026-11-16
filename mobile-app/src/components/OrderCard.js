@@ -21,8 +21,9 @@ export default function OrderCard({
     <View style={[styles.card, order.notified100m && !isDelivered ? styles.cardHot : null]}>
       <View style={styles.headerRow}>
         <View style={styles.headerText}>
-          <Text style={styles.orderId}>{order.id} / {order.mealPlan}</Text>
+          <Text style={styles.orderId}>{order.id} • {order.kitchenName || 'Partner Kitchen'}</Text>
           <Text style={styles.customerName}>{order.customerName}</Text>
+          <Text style={styles.mealSub}>{order.mealPlan}</Text>
         </View>
         <View style={[styles.pill, isDelivered ? styles.pillDelivered : styles.pillPending]}>
           <Text style={[styles.pillText, isDelivered ? styles.pillTextDelivered : styles.pillTextPending]}>
@@ -117,6 +118,11 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '600',
     color: '#1E1915'
+  },
+  mealSub: {
+    fontSize: 12,
+    color: '#5A5046',
+    marginTop: 1
   },
   pill: {
     paddingHorizontal: 10,

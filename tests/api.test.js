@@ -56,7 +56,47 @@ describe('Dabba Drop API, 100m Geofence & 7-Day Retention Suite', () => {
     assert.equal(listRes.status, 200);
     const list = await listRes.json();
     assert.equal(list.deliveries.length, 4);
+    assert.equal(list.kitchens.length, 4);
     assert.equal(list.deliveries[0].id, 'TIFFIN-101');
+    assert.equal(list.deliveries[0].kitchenName, 'Annapurna Home Kitchen');
+  });
+
+  it('registers a partner restaurant and enrolls a subscriber under it', async () => {
+    const kRes = await fetch(`${baseUrl}/api/kitchens`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: 'Bombay Spice Tiffins',
+        cuisine: 'Homestyle Maharashtrian Thali',
+        neighborhood: 'Midtown',
+        pricePerMonth: 195
+      })
+    });
+    assert.equal(kRes.status, 201);
+    const kData = await kRes.json();
+    assert.equal(kData.kitchen.name, 'Bombay Spice Tiffins');
+
+    const listKitchens = await fetch(`${baseUrl}/api/kitchens`);
+    assert.equal(listKitchens.status, 200);
+    const kitchensBody = await listKitchens.json();
+    assert.equal(kitchensBody.kitchens.length, 5);
+
+    const oRes = await fetch(`${baseUrl}/api/deliveries`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        kitchenId: kData.kitchen.id,
+        customerName: 'Neha Deshmukh',
+        customerPhone: '+15550192955',
+        address: '45 King St, Apt 12',
+        lat: 44.6820,
+        lng: -63.6720
+      })
+    });
+    assert.equal(oRes.status, 201);
+    const oData = await oRes.json();
+    assert.equal(oData.delivery.kitchenId, kData.kitchen.id);
+    assert.equal(oData.delivery.kitchenName, 'Bombay Spice Tiffins');
   });
 
   it('creates a new tiffin order via POST /api/deliveries', async () => {
@@ -76,7 +116,7 @@ describe('Dabba Drop API, 100m Geofence & 7-Day Retention Suite', () => {
     assert.equal(res.status, 201);
     const data = await res.json();
     assert.equal(data.delivery.id, 'TIFFIN-200');
-    assert.equal(data.stats.totalOrders, 5);
+    assert.equal(data.stats.totalOrders, 6);
   });
 
   it('triggers 100m geofence auto-notification accurately and idempotently', async () => {

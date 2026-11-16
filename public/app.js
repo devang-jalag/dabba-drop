@@ -1,4 +1,5 @@
 const state = {
+  kitchens: [],
   deliveries: [],
   notifications: [],
   auditLogs: [],
@@ -7,6 +8,7 @@ const state = {
   activeTab: 'driver',
   selectedCustomerId: 'TIFFIN-101',
   searchQuery: '',
+  kitchenFilter: 'ALL',
   statusFilter: 'ALL',
   watchId: null,
   simulationTimer: null,
@@ -34,7 +36,11 @@ const els = {
   toastContainer: document.getElementById('toast-container'),
   deliveryList: document.getElementById('delivery-list'),
   orderSearch: document.getElementById('order-search'),
+  kitchenFilter: document.getElementById('kitchen-filter'),
   statusFilter: document.getElementById('status-filter'),
+  kitchenList: document.getElementById('kitchen-list'),
+  kitchenSignupForm: document.getElementById('kitchen-signup-form'),
+  newKitchenSelect: document.getElementById('new-kitchen-select'),
   customerSelect: document.getElementById('customer-order-select'),
   customerSearch: document.getElementById('customer-order-search'),
   customerBody: document.getElementById('customer-tracker-body'),
@@ -189,6 +195,7 @@ document.querySelectorAll('.cargo-pill').forEach((btn) => {
 });
 
 function applySnapshot(data) {
+  if (Array.isArray(data.kitchens)) state.kitchens = data.kitchens;
   if (Array.isArray(data.deliveries)) state.deliveries = data.deliveries;
   if (Array.isArray(data.notifications)) state.notifications = data.notifications;
   if (Array.isArray(data.auditLogs)) state.auditLogs = data.auditLogs;
@@ -402,16 +409,30 @@ async function runRetentionSweep(simulateOrderId = null) {
 }
 
 function renderDriverView() {
+  if (els.kitchenFilter) {
+    const prevVal = state.kitchenFilter;
+    const kitchenOptions = ['<option value="ALL">All Partner Restaurants</option>']
+      .concat(
+        state.kitchens.map(
+          (k) => `<option value="${escapeHtml(k.id)}" ${k.id === prevVal ? 'selected' : ''}>${escapeHtml(k.name)}</option>`
+        )
+      )
+      .join('');
+    els.kitchenFilter.innerHTML = kitchenOptions;
+  }
+
   const query = state.searchQuery.trim().toLowerCase();
   const filtered = state.deliveries.filter((d) => {
     const matchesSearch =
       !query ||
       d.id.toLowerCase().includes(query) ||
+      (d.kitchenName || '').toLowerCase().includes(query) ||
       d.customerName.toLowerCase().includes(query) ||
       d.mealPlan.toLowerCase().includes(query) ||
       d.address.toLowerCase().includes(query);
 
     if (!matchesSearch) return false;
+    if (state.kitchenFilter !== 'ALL' && d.kitchenId !== state.kitchenFilter) return false;
     if (state.statusFilter === 'OUT_FOR_DELIVERY') return d.status === 'Out for Delivery';
     if (state.statusFilter === 'NOTIFIED_100M') return d.notified100m && d.status !== 'Delivered';
     if (state.statusFilter === 'DELIVERED') return d.status === 'Delivered';
@@ -433,6 +454,7 @@ function renderDriverView() {
       <article class="order-card ${d.notified100m && !isDelivered ? 'geofence-hot' : ''}">
         <div class="card-top">
           <div>
+            <span class="kitchen-badge">${escapeHtml(d.kitchenName || 'Partner Kitchen')}</span>
             <div class="order-id">${safeId} / ${escapeHtml(d.mealPlan)}</div>
             <h3 class="customer-title">${escapeHtml(d.customerName)}</h3>
           </div>
@@ -502,8 +524,9 @@ function renderCustomerView() {
     <div class="panel">
       <div class="panel-header">
         <div>
-          <span class="order-id">${escapeHtml(order.id)}</span>
-          <h3>${escapeHtml(order.customerName)} • ${escapeHtml(order.mealPlan)}</h3>
+          <span class="kitchen-badge">${escapeHtml(order.kitchenName || 'Partner Kitchen')}</span>
+          <span class="order-id"> &bull; ${escapeHtml(order.id)}</span>
+          <h3>${escapeHtml(order.customerName)} &bull; ${escapeHtml(order.mealPlan)}</h3>
           <p class="muted">${escapeHtml(order.address)}</p>
         </div>
         <span class="badge ${step4Done ? 'badge-delivered' : 'badge-pending'}">${escapeHtml(order.status)}</span>
@@ -604,15 +627,52 @@ function renderRadarSvg() {
   els.radarSvg.innerHTML = `${gridLines}${orderMarkers}${driverMarker}`;
 }
 
+function renderKitchensView() {
+  if (!els.kitchenList) return;
+
+  if (els.newKitchenSelect) {
+    const selectedVal = els.newKitchenSelect.value;
+    els.newKitchenSelect.innerHTML = state.kitchens
+      .map(
+        (k) => `<option value="${escapeHtml(k.id)}" ${k.id === selectedVal ? 'selected' : ''}>${escapeHtml(k.name)} (${escapeHtml(k.cuisine)})</option>`
+      )
+      .join('');
+  }
+
+  if (!state.kitchens.length) {
+    els.kitchenList.innerHTML = '<p class="muted">No partner restaurants registered yet.</p>';
+    return;
+  }
+
+  els.kitchenList.innerHTML = state.kitchens
+    .map((k) => {
+      const orderCount = state.deliveries.filter((d) => d.kitchenId === k.id).length;
+      return `
+        <article class="kitchen-card">
+          <div>
+            <span class="kitchen-badge">${escapeHtml(k.id)} &bull; ${escapeHtml(k.neighborhood)}</span>
+            <h4>${escapeHtml(k.name)}</h4>
+            <p class="muted">${escapeHtml(k.cuisine)}</p>
+          </div>
+          <div>
+            <p class="meta-line"><strong>$${escapeHtml(k.pricePerMonth)}/mo</strong> &bull; ${orderCount} active dabba(s)</p>
+            <button type="button" class="btn btn-outline btn-sm" style="margin-top:0.5rem;width:100%;" onclick="openOrderModalForKitchen('${escapeHtml(k.id)}')">Add Customer / Subscribe</button>
+          </div>
+        </article>
+      `;
+    })
+    .join('');
+}
+
 function renderAdminView() {
   const s = state.stats || {};
   els.adminKpis.innerHTML = `
+    <div class="kpi-card"><span>Partner Kitchens</span><strong>${s.kitchensCount ?? state.kitchens.length ?? 0}</strong></div>
     <div class="kpi-card"><span>Total Orders</span><strong>${s.totalOrders ?? 0}</strong></div>
     <div class="kpi-card"><span>Out for Delivery</span><strong>${s.outForDelivery ?? 0}</strong></div>
     <div class="kpi-card"><span>100m Alerts</span><strong>${s.notified100mCount ?? 0}</strong></div>
     <div class="kpi-card"><span>Delivered</span><strong>${s.deliveredCount ?? 0}</strong></div>
-    <div class="kpi-card"><span>Active Photos</span><strong>${s.activeProofCount ?? 0}</strong></div>
-    <div class="kpi-card"><span>Purged (&gt;7d)</span><strong>${s.purgedProofCount ?? 0}</strong></div>
+    <div class="kpi-card"><span>Active / Purged</span><strong>${s.activeProofCount ?? 0} / ${s.purgedProofCount ?? 0}</strong></div>
   `;
 
   renderRadarSvg();
@@ -620,7 +680,7 @@ function renderAdminView() {
   els.adminNotifs.innerHTML = state.notifications.length
     ? state.notifications.map((n) => `
         <li class="feed-item">
-          <div><strong>[${escapeHtml(n.tiffinId)}] ${escapeHtml(n.title)}</strong> • ${escapeHtml(n.customerPhone)}</div>
+          <div><strong>[${escapeHtml(n.tiffinId)}] ${escapeHtml(n.title)}</strong> &bull; ${escapeHtml(n.customerPhone)}</div>
           <div>${escapeHtml(n.message)}</div>
           <div class="feed-time">${new Date(n.sentAt).toLocaleString()}</div>
         </li>
@@ -636,6 +696,7 @@ function renderAdminView() {
     return `
       <tr>
         <td class="mono"><strong>${safeId}</strong></td>
+        <td>${escapeHtml(d.kitchenName || 'Partner Kitchen')}</td>
         <td>${escapeHtml(d.customerName)}</td>
         <td>${statusBadge}</td>
         <td class="mono">${d.proofHash ? `${escapeHtml(d.proofHash.slice(0, 14))}...` : '--'}</td>
@@ -659,6 +720,7 @@ function renderAdminView() {
 
 function renderAll() {
   renderDriverView();
+  renderKitchensView();
   renderCustomerView();
   renderAdminView();
 }
@@ -722,10 +784,43 @@ els.orderSearch.addEventListener('input', (e) => {
   renderDriverView();
 });
 
+if (els.kitchenFilter) {
+  els.kitchenFilter.addEventListener('change', (e) => {
+    state.kitchenFilter = e.target.value;
+    renderDriverView();
+  });
+}
+
 els.statusFilter.addEventListener('change', (e) => {
   state.statusFilter = e.target.value;
   renderDriverView();
 });
+
+if (els.kitchenSignupForm) {
+  els.kitchenSignupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('kitchen-name').value,
+      cuisine: document.getElementById('kitchen-cuisine').value,
+      neighborhood: document.getElementById('kitchen-neighborhood').value,
+      pricePerMonth: Number(document.getElementById('kitchen-price').value)
+    };
+
+    const res = await fetch('/api/kitchens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(data.error || 'Could not register partner kitchen', true);
+      return;
+    }
+    els.kitchenSignupForm.reset();
+    showToast(`Registered ${data.kitchen.name} on Dabba Drop.`);
+    applySnapshot(data);
+  });
+}
 
 // Order Lookup listeners
 els.customerSelect.addEventListener('change', (e) => {
@@ -752,10 +847,20 @@ document.getElementById('switch-camera-btn').addEventListener('click', async () 
   await startCameraStream();
 });
 
-// Kitchen Ledger modal & retention actions
-document.getElementById('open-new-order-btn').addEventListener('click', () => {
+function openOrderModalForKitchen(kitchenId = null) {
+  if (els.newKitchenSelect && kitchenId) {
+    els.newKitchenSelect.value = kitchenId;
+  }
   els.newOrderModal.classList.remove('hidden');
-});
+}
+
+const subEnrollBtn = document.getElementById('subscriber-enroll-btn');
+if (subEnrollBtn) {
+  subEnrollBtn.addEventListener('click', () => openOrderModalForKitchen());
+}
+
+// Network Ledger modal & retention actions
+document.getElementById('open-new-order-btn').addEventListener('click', () => openOrderModalForKitchen());
 document.getElementById('close-new-order-btn').addEventListener('click', () => {
   els.newOrderModal.classList.add('hidden');
 });
@@ -770,6 +875,7 @@ document.getElementById('use-driver-coords-btn').addEventListener('click', () =>
 els.newOrderForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const payload = {
+    kitchenId: els.newKitchenSelect ? els.newKitchenSelect.value : 'KITCHEN-01',
     customerName: document.getElementById('new-customer-name').value,
     customerPhone: document.getElementById('new-customer-phone').value,
     address: document.getElementById('new-address').value,
@@ -792,7 +898,7 @@ els.newOrderForm.addEventListener('submit', async (e) => {
 
   els.newOrderModal.classList.add('hidden');
   els.newOrderForm.reset();
-  showToast(`Added order ${data.delivery.id} for ${data.delivery.customerName}.`);
+  showToast(`Enrolled ${data.delivery.customerName} (${data.delivery.id}) with ${data.delivery.kitchenName}.`);
   applySnapshot(data);
 });
 
@@ -818,6 +924,7 @@ window.handleFileProofSubmit = handleFileProofSubmit;
 window.openLiveCamera = openLiveCamera;
 window.jumpNearOrder = jumpNearOrder;
 window.runRetentionSweep = runRetentionSweep;
+window.openOrderModalForKitchen = openOrderModalForKitchen;
 
 initScrollReveals();
 updateScrollEffects();

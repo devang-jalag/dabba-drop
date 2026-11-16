@@ -49,13 +49,13 @@
     </div>
 
     <div class="hero-content">
-      <div class="hero-eyebrow reveal-on-scroll">100-Meter Geofence Engine &bull; Cross-Platform Dispatch</div>
+      <div class="hero-eyebrow reveal-on-scroll">3rd-Party Recurring Delivery Network &bull; 100m Geofence Engine</div>
       <h1 class="hero-title reveal-on-scroll">
-        <span class="line-mask"><span>Every dabba,</span></span>
+        <span class="line-mask"><span>Every kitchen&rsquo;s dabba,</span></span>
         <span class="line-mask"><span><em>right on cue.</em></span></span>
       </h1>
       <p class="hero-copy reveal-on-scroll">
-        Built for fresh harvests, hot tiffins, morning dairy, and recurring neighborhood routes. Automatic arrival notices fire at 100 meters, doorstep photos carry a cryptographic watermark, and old images purge cleanly after 7 days.
+        The third-party dispatch layer connecting independent restaurants, kitchens, and daily subscribers. Kitchens add customers or diners pick their favorite restaurant—Dabba Drop handles 100-meter arrival alerts, watermarked photo proof, and 7-day storage cleanup.
       </p>
 
       <div class="hero-actions reveal-on-scroll">
@@ -164,20 +164,21 @@
     <div class="container">
       <div class="workspace-header reveal-on-scroll">
         <div>
-          <span class="kicker">Interactive Product Console</span>
-          <h2>Live Dispatch, Tracking &amp; Ledger</h2>
+          <span class="kicker">3rd-Party Marketplace Console</span>
+          <h2>Multi-Restaurant Dispatch &amp; Subscriber Network</h2>
         </div>
 
         <nav class="role-tabs" aria-label="Workspace Views">
-          <button type="button" class="tab-btn active" data-tab="driver">Route Dispatch</button>
-          <button type="button" class="tab-btn" data-tab="customer">Order Lookup</button>
-          <button type="button" class="tab-btn" data-tab="admin">Kitchen Ledger</button>
+          <button type="button" class="tab-btn active" data-tab="driver">Rider Dispatch</button>
+          <button type="button" class="tab-btn" data-tab="kitchens">Restaurant Partners</button>
+          <button type="button" class="tab-btn" data-tab="customer">Subscriber Lookup</button>
+          <button type="button" class="tab-btn" data-tab="admin">Network Ledger</button>
         </nav>
       </div>
 
       <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-      <!-- VIEW 1: ROUTE DISPATCH (DRIVER) -->
+      <!-- VIEW 1: RIDER DISPATCH -->
       <section id="view-driver" class="tab-view active">
         <div class="panel control-panel reveal-on-scroll">
           <div class="control-group">
@@ -187,7 +188,10 @@
           </div>
 
           <div class="filter-bar">
-            <input id="order-search" type="search" class="input" placeholder="Search order ID, guest name, dish, or street..." />
+            <input id="order-search" type="search" class="input" placeholder="Search order ID, guest, restaurant, dish, or street..." />
+            <select id="kitchen-filter" class="input select-sm" aria-label="Filter deliveries by partner restaurant">
+              <option value="ALL">All Partner Restaurants</option>
+            </select>
             <select id="status-filter" class="input select-sm" aria-label="Filter deliveries by status">
               <option value="ALL">All Dabbas</option>
               <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
@@ -200,10 +204,60 @@
         <div id="delivery-list" class="order-grid"></div>
       </section>
 
-      <!-- VIEW 2: ORDER LOOKUP (CUSTOMER) -->
+      <!-- VIEW 2: RESTAURANT PARTNERS ONBOARDING -->
+      <section id="view-kitchens" class="tab-view">
+        <div class="admin-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Partner Restaurants &amp; Kitchens</h3>
+                <p class="muted">Restaurants onboard onto Dabba Drop to automate customer alerts and doorstep proof without WhatsApp.</p>
+              </div>
+            </div>
+            <div id="kitchen-list" class="kitchen-grid"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Register a Partner Kitchen</h3>
+                <p class="muted">Onboard a new restaurant or tiffin kitchen to start adding customers immediately.</p>
+              </div>
+            </div>
+            <form id="kitchen-signup-form" class="form-stack">
+              <div class="form-row">
+                <label class="field-label" for="kitchen-name">Restaurant / Kitchen Name</label>
+                <input id="kitchen-name" class="input" type="text" required placeholder="e.g. Bombay Spice Tiffins" />
+              </div>
+              <div class="form-row">
+                <label class="field-label" for="kitchen-cuisine">Primary Menu / Dabba Type</label>
+                <input id="kitchen-cuisine" class="input" type="text" required placeholder="e.g. Homestyle Maharashtrian Thali" />
+              </div>
+              <div class="form-row-2">
+                <div>
+                  <label class="field-label" for="kitchen-neighborhood">Service Area</label>
+                  <input id="kitchen-neighborhood" class="input" type="text" required placeholder="e.g. Midtown" />
+                </div>
+                <div>
+                  <label class="field-label" for="kitchen-price">Monthly Plan ($)</label>
+                  <input id="kitchen-price" class="input" type="number" min="50" required value="195" />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Register Restaurant Partner</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: SUBSCRIBER LOOKUP & SIGNUP -->
       <section id="view-customer" class="tab-view">
         <div class="panel customer-toolbar">
-          <label for="customer-order-select" class="field-label">Select Dabba Order</label>
+          <div class="panel-header" style="margin-bottom:0.5rem;">
+            <div>
+              <label for="customer-order-select" class="field-label" style="margin-bottom:0;">Track Active Dabba or Subscribe to a Restaurant</label>
+            </div>
+            <button id="subscriber-enroll-btn" type="button" class="btn btn-primary btn-sm">Subscribe to a Restaurant</button>
+          </div>
           <div class="customer-select-row">
             <select id="customer-order-select" class="input"></select>
             <input id="customer-order-search" type="text" class="input" placeholder="Order ID (e.g. TIFFIN-101)" />
@@ -214,7 +268,7 @@
         <div id="customer-tracker-body"></div>
       </section>
 
-      <!-- VIEW 3: KITCHEN LEDGER (OPS & RETENTION) -->
+      <!-- VIEW 4: NETWORK LEDGER (PLATFORM OPS & RETENTION) -->
       <section id="view-admin" class="tab-view">
         <div id="admin-kpis" class="kpi-grid"></div>
 
@@ -222,10 +276,10 @@
           <div class="panel">
             <div class="panel-header">
               <div>
-                <h3>100-Meter Delivery Radius</h3>
-                <p class="muted">Rider position against each doorstep arrival ring.</p>
+                <h3>100-Meter Network Radius</h3>
+                <p class="muted">Shared rider position against active drop-offs across all partner kitchens.</p>
               </div>
-              <button id="open-new-order-btn" type="button" class="btn btn-primary btn-sm">Add Dabba Order</button>
+              <button id="open-new-order-btn" type="button" class="btn btn-primary btn-sm">Add Customer Order</button>
             </div>
             <div class="radar-wrap">
               <svg id="geofence-radar" viewBox="0 0 420 280" role="img" aria-label="100 meter delivery map"></svg>
@@ -256,7 +310,8 @@
               <thead>
                 <tr>
                   <th>Order</th>
-                  <th>Guest</th>
+                  <th>Restaurant</th>
+                  <th>Subscriber</th>
                   <th>Proof Status</th>
                   <th>SHA-256</th>
                   <th>Retention Window</th>
@@ -270,7 +325,7 @@
 
         <div class="panel">
           <div class="panel-header">
-            <h3>Kitchen Activity Log</h3>
+            <h3>Network Activity Log</h3>
           </div>
           <ul id="audit-log-list" class="audit-list"></ul>
         </div>
@@ -302,16 +357,20 @@
     </div>
   </div>
 
-  <!-- NEW DABBA ORDER MODAL -->
+  <!-- NEW SUBSCRIBER / RESTAURANT ORDER MODAL -->
   <div id="new-order-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="new-order-title">
     <div class="modal-card">
       <div class="modal-header">
-        <h3 id="new-order-title">Add Dabba Order</h3>
+        <h3 id="new-order-title">Enroll Subscriber / Add Order</h3>
         <button id="close-new-order-btn" type="button" class="icon-close" aria-label="Close modal">&times;</button>
       </div>
       <form id="new-order-form" class="form-stack">
         <div class="form-row">
-          <label class="field-label" for="new-customer-name">Guest Name</label>
+          <label class="field-label" for="new-kitchen-select">Partner Restaurant / Kitchen</label>
+          <select id="new-kitchen-select" class="input" required></select>
+        </div>
+        <div class="form-row">
+          <label class="field-label" for="new-customer-name">Subscriber Name</label>
           <input id="new-customer-name" class="input" type="text" required placeholder="e.g. Kabir Verma" />
         </div>
         <div class="form-row">
