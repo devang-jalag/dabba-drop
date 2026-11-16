@@ -252,9 +252,9 @@ h1, h2, h3, .brand-name, .customer-title, .kpi-card strong {
 .hero-title {
   font-size: clamp(2.8rem, 6.2vw, 5.1rem);
   font-weight: 600;
-  line-height: 1.04;
+  line-height: 1.18;
   max-width: 720px;
-  margin-bottom: 1.35rem;
+  margin-bottom: 1.15rem;
   color: #FAF6EE;
 }
 
@@ -265,7 +265,8 @@ h1, h2, h3, .brand-name, .customer-title, .kpi-card strong {
 
 .line-mask {
   display: block;
-  overflow: hidden;
+  overflow: visible;
+  padding: 0.04em 0 0.16em;
 }
 
 .line-mask > span {
