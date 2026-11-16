@@ -117,3 +117,11 @@ dabba-drop/
 | `POST /api/deliveries/reset` | Reset demo SQLite data and clear uploaded demo files |
 | `POST /api/orders/:orderId/location` | Mobile per-order geofence check (`{ driverLat, driverLng }`) |
 | `POST /api/orders/:orderId/proof` | Mobile per-order proof upload (`proofImage`) |
+
+---
+
+## License & Copyright
+
+Copyright (c) 2026 Devang Jalag. All Rights Reserved.
+
+This codebase, architecture, and brand assets are proprietary and confidential. Unauthorized copying, modification, redistribution, or commercial use without prior written permission is strictly prohibited. See [LICENSE](LICENSE) for full terms.

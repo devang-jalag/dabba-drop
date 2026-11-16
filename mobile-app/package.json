@@ -1,6 +1,8 @@
 {
   "name": "dabba-drop-mobile",
   "version": "1.0.0",
+  "author": "Devang Jalag",
+  "license": "UNLICENSED",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
