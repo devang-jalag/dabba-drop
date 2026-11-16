@@ -45,6 +45,10 @@ function createApp(options = {}) {
   app.use(express.static(path.join(config.ROOT_DIR, 'public')));
   app.use('/uploads', express.static(uploadDir));
 
+  app.get('/favicon.ico', (req, res) => {
+    res.type('image/svg+xml').sendFile(path.join(config.ROOT_DIR, 'public', 'logo.svg'));
+  });
+
   const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadDir),
     filename: (req, file, cb) => {
