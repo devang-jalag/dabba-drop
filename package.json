@@ -1,7 +1,7 @@
 {
   "name": "dabba-drop",
   "version": "2.0.0",
-  "description": "Dabba Drop — Full-Stack & Cross-Platform Recurring Doorstep Dispatch, 100m Geofence Alerts & 7-Day Proof Retention",
+  "description": "Dabba Drop • Full-Stack & Cross-Platform Recurring Doorstep Dispatch, 100m Geofence Alerts & 7-Day Proof Retention",
   "main": "server.js",
   "author": "Devang Jalag",
   "license": "UNLICENSED",

@@ -33,7 +33,7 @@ export default function OrderCard({
 
       <Text style={styles.meta}>Address: {order.address}</Text>
       <Text style={styles.meta}>
-        Distance: {distanceLabel} {order.etaMinutes ? `— ETA ${order.etaMinutes} min` : ''}
+        Distance: {distanceLabel} {order.etaMinutes ? `• ETA ${order.etaMinutes} min` : ''}
       </Text>
       {order.notes ? <Text style={styles.notes}>{order.notes}</Text> : null}
 

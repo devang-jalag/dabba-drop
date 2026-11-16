@@ -72,7 +72,7 @@ function showToast(message, isError = false) {
 function formatRetentionCountdown(expiresAt) {
   if (!expiresAt) return 'N/A';
   const diffMs = Date.parse(expiresAt) - Date.now();
-  if (diffMs <= 0) return 'Expired — pending sweep';
+  if (diffMs <= 0) return 'Expired • pending sweep';
   const days = Math.floor(diffMs / (24 * 60 * 60 * 1000));
   const hours = Math.floor((diffMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
   return `${days}d ${hours}h left`;
@@ -136,10 +136,10 @@ if (els.bentoSlider) {
     const val = Number(els.bentoSlider.value);
     els.bentoReadout.textContent = `${val} m`;
     if (val <= 100) {
-      els.bentoState.textContent = `Inside 100m Geofence (${val}m) — Customer Auto-Notified`;
+      els.bentoState.textContent = `Inside 100m Geofence (${val}m) • Customer Auto-Notified`;
       els.bentoState.classList.add('triggered');
     } else {
-      els.bentoState.textContent = `En Route (${val}m) — Silent GPS Polling`;
+      els.bentoState.textContent = `En Route (${val}m) • Silent GPS Polling`;
       els.bentoState.classList.remove('triggered');
     }
   };
@@ -297,7 +297,7 @@ async function startCameraStream() {
       audio: false
     });
     els.cameraVideo.srcObject = state.cameraStream;
-    els.cameraTitle.textContent = `Doorstep Proof — ${state.cameraTargetId}`;
+    els.cameraTitle.textContent = `Doorstep Proof • ${state.cameraTargetId}`;
     const coords = state.driver ? `${state.driver.lat.toFixed(5)}, ${state.driver.lng.toFixed(5)}` : 'GPS Pending';
     els.cameraHud.textContent = `${state.cameraTargetId} | ${new Date().toLocaleString()} | GPS ${coords}`;
     els.cameraModal.classList.remove('hidden');
@@ -452,7 +452,7 @@ function renderDriverView() {
 
 function renderCustomerView() {
   const currentOptions = state.deliveries
-    .map((d) => `<option value="${escapeHtml(d.id)}" ${d.id === state.selectedCustomerId ? 'selected' : ''}>${escapeHtml(d.id)} — ${escapeHtml(d.customerName)}</option>`)
+    .map((d) => `<option value="${escapeHtml(d.id)}" ${d.id === state.selectedCustomerId ? 'selected' : ''}>${escapeHtml(d.id)} • ${escapeHtml(d.customerName)}</option>`)
     .join('');
   els.customerSelect.innerHTML = currentOptions;
 
@@ -473,7 +473,7 @@ function renderCustomerView() {
       <div class="panel-header">
         <div>
           <span class="order-id">${escapeHtml(order.id)}</span>
-          <h3>${escapeHtml(order.customerName)} — ${escapeHtml(order.mealPlan)}</h3>
+          <h3>${escapeHtml(order.customerName)} • ${escapeHtml(order.mealPlan)}</h3>
           <p class="muted">${escapeHtml(order.address)}</p>
         </div>
         <span class="badge ${step4Done ? 'badge-delivered' : 'badge-pending'}">${escapeHtml(order.status)}</span>
@@ -486,7 +486,7 @@ function renderCustomerView() {
         <div class="step ${step4Done ? 'done' : ''}">4. Delivered with Proof</div>
       </div>
 
-      ${state.driver ? `<p class="meta-line">Rider: <strong>${escapeHtml(state.driver.name)}</strong> (${escapeHtml(state.driver.vehicle)}) — ETA: <strong>${order.etaMinutes ?? '--'} min</strong></p>` : ''}
+      ${state.driver ? `<p class="meta-line">Rider: <strong>${escapeHtml(state.driver.name)}</strong> (${escapeHtml(state.driver.vehicle)}) • ETA: <strong>${order.etaMinutes ?? '--'} min</strong></p>` : ''}
     </div>
 
     <div class="customer-grid">
@@ -590,7 +590,7 @@ function renderAdminView() {
   els.adminNotifs.innerHTML = state.notifications.length
     ? state.notifications.map((n) => `
         <li class="feed-item">
-          <div><strong>[${escapeHtml(n.tiffinId)}] ${escapeHtml(n.title)}</strong> — ${escapeHtml(n.customerPhone)}</div>
+          <div><strong>[${escapeHtml(n.tiffinId)}] ${escapeHtml(n.title)}</strong> • ${escapeHtml(n.customerPhone)}</div>
           <div>${escapeHtml(n.message)}</div>
           <div class="feed-time">${new Date(n.sentAt).toLocaleString()}</div>
         </li>

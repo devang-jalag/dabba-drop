@@ -47,10 +47,10 @@ export default function CameraModal({
         <View style={styles.topBar}>
           <View>
             <Text style={styles.title}>
-              Doorstep Proof — {order ? order.id : ''}
+              Doorstep Proof • {order ? order.id : ''}
             </Text>
             <Text style={styles.subtitle}>
-              {order ? `${order.customerName} — 7-day retention` : ''}
+              {order ? `${order.customerName} • 7-day retention` : ''}
             </Text>
           </View>
           <TouchableOpacity style={styles.closeBtn} onPress={handleClose}>

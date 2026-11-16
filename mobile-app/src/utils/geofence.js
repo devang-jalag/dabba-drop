@@ -18,7 +18,7 @@ export function getDistanceInMeters(lat1, lon1, lat2, lon2) {
 export function formatRetentionCountdown(expiresAt) {
   if (!expiresAt) return 'N/A';
   const diffMs = Date.parse(expiresAt) - Date.now();
-  if (diffMs <= 0) return 'Expired — pending purge';
+  if (diffMs <= 0) return 'Expired • pending purge';
   const days = Math.floor(diffMs / (24 * 60 * 60 * 1000));
   const hours = Math.floor((diffMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
   return `${days}d ${hours}h left (7-day policy)`;
