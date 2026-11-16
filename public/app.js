@@ -78,7 +78,36 @@ function formatRetentionCountdown(expiresAt) {
   return `${days}d ${hours}h left`;
 }
 
-// Fluid 60fps Scroll Parallax & Progress Bar
+// Fluid 60fps Scroll Parallax, Active Nav Highlight & Progress Bar
+const navLinks = Array.from(document.querySelectorAll('.anchor-link[data-section]'));
+const trackedSections = ['hero-overview', 'bento-showcase', 'live-workspace']
+  .map((id) => document.getElementById(id))
+  .filter(Boolean);
+
+function setActiveNavSection(sectionId) {
+  navLinks.forEach((link) => {
+    link.classList.toggle('is-active', link.dataset.section === sectionId);
+  });
+}
+
+function syncActiveSectionNav() {
+  if (!trackedSections.length || !navLinks.length) return;
+  const probeY = (window.scrollY || 0) + 180;
+  let currentId = trackedSections[0].id;
+  for (const sec of trackedSections) {
+    if (probeY >= sec.offsetTop) {
+      currentId = sec.id;
+    }
+  }
+  setActiveNavSection(currentId);
+}
+
+navLinks.forEach((link) => {
+  link.addEventListener('click', () => {
+    setActiveNavSection(link.dataset.section);
+  });
+});
+
 let scrollTicking = false;
 function updateScrollEffects() {
   const y = window.scrollY || 0;
@@ -93,6 +122,7 @@ function updateScrollEffects() {
     const scale = 1 + Math.min(0.1, y / 6000);
     els.heroMedia.style.transform = `translate3d(0, ${translate}px, 0) scale(${scale.toFixed(4)})`;
   }
+  syncActiveSectionNav();
   scrollTicking = false;
 }
 

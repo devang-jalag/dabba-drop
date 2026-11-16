@@ -128,31 +128,67 @@ h1, h2, h3, .brand-name, .customer-title, .kpi-card strong {
 .anchor-nav {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background: rgba(245, 240, 230, 0.06);
+  border: 1px solid rgba(231, 194, 132, 0.16);
 }
 
 .anchor-link {
+  position: relative;
   color: #DFD5C5;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 500;
-  padding: 0.42rem 0.85rem;
+  padding: 0.42rem 0.9rem;
   border-radius: 999px;
-  transition: color 0.2s ease, background 0.2s ease;
+  border: 1px solid transparent;
+  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.anchor-link::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #E7C284, #D4A359);
+  transform: scaleX(0);
+  opacity: 0;
+  transition: transform 0.28s var(--ease-launch), opacity 0.25s ease;
 }
 
 .anchor-link:hover {
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.08);
+  color: #FAF6EE;
+  background: rgba(245, 240, 230, 0.1);
+}
+
+.anchor-link:hover::after,
+.anchor-link.is-active::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.anchor-link.is-active {
+  color: #FAF6EE;
+  background: rgba(245, 240, 230, 0.14);
+  border-color: rgba(212, 163, 89, 0.55);
+  box-shadow: 0 0 14px rgba(212, 163, 89, 0.2);
 }
 
 .anchor-cta {
-  background: rgba(158, 59, 36, 0.85);
+  background: rgba(158, 59, 36, 0.92);
   color: #FAF6EE;
 }
 
-.anchor-cta:hover {
+.anchor-cta:hover,
+.anchor-cta.is-active {
   background: var(--accent);
+  border-color: rgba(231, 194, 132, 0.72);
+  box-shadow: 0 0 16px rgba(158, 59, 36, 0.48), 0 0 10px rgba(212, 163, 89, 0.24);
 }
 
 .telemetry-bar {
